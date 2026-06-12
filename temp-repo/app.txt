@@ -1,0 +1,59 @@
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
+
+app = FastAPI()
+
+# Allow the React app to communicate with the Python API (CORS)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], # Allows all origins. In production, change to your specific frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.post("/analyze")
+async def analyze(request: Request):
+    payload = await request.json()
+    geojson_data = payload.get("geojson")
+    start_date = payload.get("start_date")
+    end_date = payload.get("end_date")
+
+    try:
+        # -------------------------------------------------------------
+        # INSERT YOUR REAL SATELLITE LOGIC HERE
+        # 1. Parse the bounds from geojson_data
+        # 2. Query Sentinel-1 / Sentinel-2 STAC catalog 
+        # 3. Download images / process with rasterio
+        # 4. Generate polygon features of changes
+        # -------------------------------------------------------------
+        
+        # Example output structure the React app expects:
+        mocked_real_features = [
+            {
+               "type": "Feature",
+               "properties": { 
+                   "area_m2": 150.5, 
+                   "confidence_score": 92.5, 
+                   "confidence_category": "VERY HIGH", 
+                   "first_detected_date": end_date 
+               },
+               # Example geometry coordinate format
+               "geometry": { "type": "Polygon", "coordinates": [[[0,0], [0,1], [1,1], [1,0], [0,0]]] }
+            }
+        ]
+
+        return {
+            "status": "success",
+            "data": {
+                "type": "FeatureCollection",
+                "features": mocked_real_features
+            }
+        }
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# Render dynamically assigns a port via the PORT environment variable
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)

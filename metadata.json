@@ -1,0 +1,6 @@
+{
+  "name": "LandGuard",
+  "description": "Production-ready Sentinel-based monitoring SaaS MVP with complete generated Python STAC engine.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
